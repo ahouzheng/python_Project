@@ -45,6 +45,15 @@ function RL(a, b) {
 
 
 def trans(text):
+    if len(text.encode('utf-8')) > len(text) * 2:
+        # 汉译英
+        sl = 'zh-CN'
+        tl = 'en'
+    else:
+        # 英译汉
+        sl = "en"
+        tl = 'zh-CN'
+
     tk = get_tk.call("TL", text)
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) \
@@ -53,8 +62,8 @@ def trans(text):
 
     data = {
         'client': 't',
-        'sl': 'en',
-        'tl': 'zh-CN',
+        'sl': sl,
+        'tl': tl,
         'hl': 'zh-CN',
         # 'dt': 'at',
         # 'dt': 'bd',
@@ -78,6 +87,9 @@ def trans(text):
     res1 = requests.get(url_Src, headers=headers, params=data).json()
     return res1[0][0][0]
 
+while True:
+    para = input("input:")
+    print(trans(para))
 
 
 
