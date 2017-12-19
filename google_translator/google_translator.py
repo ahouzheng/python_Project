@@ -78,18 +78,22 @@ def trans(text):
         'ie': 'UTF-8',
         'oe': 'UTF-8',
         'source': 'btn',
-        'ssel': '0',
-        'tsel': '0',
+        'ssel': '6',
+        'tsel': '3',
         'kc': '0',
         'tk': tk,
         'q': text
     }
     res1 = requests.get(url_Src, headers=headers, params=data).json()
-    return res1[0][0][0]
+    to_text = ''
+    for item in res1[0]:
+        to_text += item[0]
+    return to_text
 
 while True:
     para = input("input:")
     print(trans(para))
+
 
 
 
