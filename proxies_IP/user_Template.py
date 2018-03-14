@@ -8,7 +8,7 @@ def API_GetOne():
         return res.text
     except:
         return 0
-    
+
 
 def API_GetCount():
     url = 'http://localhost:5000/count/'

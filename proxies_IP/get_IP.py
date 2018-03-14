@@ -18,7 +18,7 @@ class IP_Acquirer(Thread):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.7\
             5 Safari/537.36'}
-        self.IP_Sources = [self.IP_Source1, self.IP_Source2, self.IP_Source3, self.IP_Source4, self.IP_Source5]
+        self.IP_Sources = [self.IP_Source1, self.IP_Source2, self.IP_Source3, self.IP_Source4, self.IP_Source5, self.IP_Source6, self.IP_Source7]
         
     def run(self):   
         for item in self.IP_Sources:
@@ -45,9 +45,9 @@ class IP_Acquirer(Thread):
                 print('source1', e.args)
                 return
             for _ in proxies:
-                proxie = _.find_all('td')
-                proxie = ':'.join((proxie[1].text, proxie[2].text)), proxie[4].text
-                yield proxie
+                proxy = _.find_all('td')
+                proxy = ':'.join((proxy[1].text, proxy[2].text)), proxy[4].text
+                yield proxy
 
     def IP_Source2(self):
         '''
@@ -65,8 +65,8 @@ class IP_Acquirer(Thread):
                 print('source2', e.args)
                 return
             for __ in proxies:
-                proxie = __.find_all('td')[0:3]
-                yield ':'.join((proxie[0].text, proxie[1].text)), proxie[2].text.replace('高匿名', '高匿')
+                proxy = __.find_all('td')[0:3]
+                yield ':'.join((proxy[0].text, proxy[1].text)), proxy[2].text.replace('高匿名', '高匿')
             time.sleep(1)  # 该网站过快访问返回 '-10'
 
     def IP_Source3(self):
@@ -112,13 +112,13 @@ class IP_Acquirer(Thread):
                 print('source4', e.args)
                 return
             for _ in proxies:
-                proxie = _.find_all('td')[0:3]
-                proxie = ':'.join((proxie[0].text, proxie[1].text))
+                proxy = _.find_all('td')[0:3]
+                proxy = ':'.join((proxy[0].text, proxy[1].text))
                 if 'type=1' in res.url:
-                    proxie = proxie, '高匿'
+                    proxy = proxy, '高匿'
                 if 'type=2' in res.url:
-                    proxie = proxie, '透明'
-                yield proxie
+                    proxy = proxy, '透明'
+                yield proxy
 
     def IP_Source5(self):
         '''
@@ -136,41 +136,62 @@ class IP_Acquirer(Thread):
                 print("source5", e.args)
                 return
             for __ in proxies:
-                proxie = __.find_all('span')[0:3]
-                proxie = proxie[0].text + ':' + proxie[1].text, proxie[2].text
-                yield proxie
+                proxy = __.find_all('span')[0:3]
+                proxy = proxy[0].text + ':' + proxy[1].text, proxy[2].text
+                yield proxy
+
+    # def IP_Source6(self):
+    #     '''
+    #     IP代理源：全网代理IP http://www.goubanjia.com
+    #     '''
+    #     urls = ['http://www.goubanjia.com/free/gngn/index.shtml',
+    #             'http://www.goubanjia.com/free/gnpt/index.shtml']
+    #     for _ in urls:
+    #         try:
+    #             res = requests.get(_, headers=self.headers)
+    #             soup = BS(res.text, 'html.parser')
+    #             proxies = soup.find_all(id='list')[0].find_all('tbody')[0].find_all('tr')
+    #         except Exception as e:
+    #             print('source6', e.args)
+    #             return
+    #         for __ in proxies:
+    #             proxy = __.find_all('td')[0:2]
+    #             temp = proxy[0].find_all(('span', 'div'))
+    #             temp = ''.join([x.text for x in temp])
+    #             yield temp
 
     def IP_Source6(self):
         '''
-        IP代理源：全网代理IP http://www.goubanjia.com
-        '''
-        urls = ['http://www.goubanjia.com/free/gngn/index.shtml',
-                'http://www.goubanjia.com/free/gnpt/index.shtml']
-        for _ in urls:
-            try:
-                res = requests.get(_, headers=self.headers)
-                soup = BS(res.text, 'html.parser')
-                proxies = soup.find_all(id='list')[0].find_all('tbody')[0].find_all('tr')
-            except Exception as e:
-                print('source6', e.args)
-                return
-            for __ in proxies:
-                proxie = __.find_all('td')[0:2]
-                temp = proxie[0].find_all(('span', 'div'))
-                temp = ''.join([x.text for x in temp])
-                yield temp
-
-    def IP_Source7(self):
-        '''
         IP代理源：181  http://www.ip181.com/
+            每页100条
         '''
         url = ['http://www.ip181.com/']
+        try:
+            res = requests.get(url[0], headers=self.headers)
+            soup = BS(res.content.decode('GBK'), 'html.parser')
+            proxies = soup.find_all(class_='row')[0].find_all('table')[0].find_all('tbody')[0].find_all('tr')[1:]
+        except Exception as e:
+            print('source6', e.args)
+            return
+        for __ in proxies:
+            proxy = __.find_all('td')[0:3]
+            proxy = ":".join((proxy[0].text, proxy[1].text)), proxy[2].text
+            yield proxy
 
-    def IP_Source8(self):
+    def IP_Source7(self):
         '''
         IP代理源：讯代理 http://www.xdaili.cn
         '''
         url = ['http://www.xdaili.cn/ipagent/freeip/getFreeIps?page=1&rows=10']
+        try:
+            res = requests.get(url[0], headers=self.headers)
+            proxies = res.json()['RESULT']['rows']
+        except Exception as e:
+            print('source7', e.args)
+            return
+        for __ in proxies:
+            proxy = __['ip'] + ":" + __['port'], __['anony'] 
+            yield proxy
 
 
 if __name__ == '__main__':
