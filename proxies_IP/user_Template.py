@@ -1,4 +1,8 @@
 import requests
+'''
+代理IP池用户接口
+此接口运行需提前运行IP池服务
+'''
 
 
 def API_GetOne():

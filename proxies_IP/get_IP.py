@@ -18,7 +18,7 @@ class IP_Acquirer(Thread):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) \
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.7\
             5 Safari/537.36'}
-        self.IP_Sources = [self.IP_Source1, self.IP_Source2, self.IP_Source3, self.IP_Source4, self.IP_Source5, self.IP_Source6, self.IP_Source7]
+        self.IP_Sources = [self.IP_Source1, self.IP_Source2, self.IP_Source5, self.IP_Source7]
         
     def run(self):   
         for item in self.IP_Sources:
@@ -100,6 +100,7 @@ class IP_Acquirer(Thread):
         '''
         IP代理源：云代理 http://www.ip3366.net
             每页15个
+            ！！ 含国外代理
         '''
         urls = ['http://www.ip3366.net/free/?stype=1',  # 高匿
                 'http://www.ip3366.net/free/?stype=2']  # 透明
@@ -167,14 +168,13 @@ class IP_Acquirer(Thread):
         '''
         url = ['http://www.ip181.com/']
         try:
-            res = requests.get(url[0], headers=self.headers)
-            soup = BS(res.content.decode('GBK'), 'html.parser')
-            proxies = soup.find_all(class_='row')[0].find_all('table')[0].find_all('tbody')[0].find_all('tr')[1:]
+            res = requests.get(url[0], headers=self.headers).json()
+            proxies = res["RESULT"]
         except Exception as e:
             print('source6', e.args)
             return
         for __ in proxies:
-            proxy = __.find_all('td')[0:3]
+            proxy = __["ip"] + ':' + __["port"], '高匿'
             proxy = ":".join((proxy[0].text, proxy[1].text)), proxy[2].text
             yield proxy
 

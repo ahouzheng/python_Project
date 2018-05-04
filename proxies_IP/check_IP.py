@@ -37,12 +37,21 @@ class IP_Checker(Thread):
         url = 'http://www.baidu.com'
         prox = {"http": 'http:' + IP_ForChecking}
         try:
-            res = requests.get(url, headers=headers, proxies=prox, timeout=8)
+            res = requests.get(url, headers=headers, proxies=prox, timeout=4)
         except Exception as e:
-            print(IP_ForChecking, 'is useless')
-            return False
+            try:
+                res = requests.get(url, headers=headers, proxies=prox, timeout=4)
+            except Exception as e:
+                print(IP_ForChecking, 'is useless')
+                return False
+            else:
+                if res.status_code == 200:
+                    print(IP_ForChecking, 'is OK')
+                    return True
         else:
             if res.status_code == 200:
                 print(IP_ForChecking, 'is OK')
                 return True
+
+
 
